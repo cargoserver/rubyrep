@@ -1,5 +1,7 @@
 = rubyrep
 
+Note: This branch is Rails 3.2.8 and Ruby 1.9.3 only!
+
 == MISSION:
 
 Development of an open-source solution for asynchronous, master-master replication of relational databases that is
