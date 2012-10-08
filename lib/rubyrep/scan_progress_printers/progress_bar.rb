@@ -1,3 +1,5 @@
+require 'active_support/core_ext/class/attribute_accessors'   # get cattr_accessor
+
 module RR
   module ScanProgressPrinters
     
