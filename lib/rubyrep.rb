@@ -2,6 +2,7 @@ $LOAD_PATH.unshift File.dirname(__FILE__)
 
 require 'rubygems'
 require 'yaml'
+require 'logger'
 
 gem 'activerecord', '>= 3.0.5'
 require 'active_record'
@@ -59,6 +60,30 @@ require 'rubyrep/uninstall_runner'
 require 'rubyrep/uninstall_tables_runner'
 require 'rubyrep/generate_runner'
 require 'rubyrep/noisy_connection'
+
+module RR
+  # Returns the logger used by RubyRep. It logs to STDOUT by default if
+  # nothing else is specified via the RR_LOGFILE env variable. The log level
+  # defaults to INFO, but it can also be set via the RR_LOGLEVEL env variable.
+  def self.logger
+    @logger ||= begin
+      file  = (ENV['RR_LOGFILE'] && File.expand_path(ENV['RR_LOGFILE'])) || STDOUT
+      level = Logger::INFO
+      
+      if ENV['RR_LOGLEVEL']
+        # Try to get the correct constant from the logger class
+        env_level = ENV['RR_LOGLEVEL'].upcase
+        level = Logger.const_get(env_level) if Logger.constants.include?(env_level)
+      end
+
+      # Create new logger and return it
+      Logger.new(file).tap do |l|
+        l.level    = level
+        l.progname = 'RubyRep'
+      end
+    end
+  end
+end
 
 Dir["#{File.dirname(__FILE__)}/rubyrep/connection_extenders/*.rb"].each do |extender|
   # jdbc_extender.rb is only loaded if we are running on jruby
