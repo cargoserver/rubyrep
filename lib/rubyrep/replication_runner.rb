@@ -71,11 +71,15 @@ EOS
     # Loads config file and creates session if necessary.
     def session
       unless @session
+        RR.logger.debug 'RUNNER - No session exists, creating one now'
+
         unless @config
           load options[:config_file]
           @config = Initializer.configuration
         end
         @session = Session.new @config
+
+        RR.logger.debug 'RUNNER - Successfully created session'
       end
       @session
     end
@@ -93,7 +97,7 @@ EOS
     def pause_replication
       @last_run ||= 1.year.ago
       now = Time.now
-      @next_run = @last_run + session.configuration.options[:replication_interval]
+      @next_run = @last_run + Initializer.configuration.options[:replication_interval]
       unless now >= @next_run
         waiting_time = @next_run - now
         @waiter_thread.join waiting_time
@@ -126,10 +130,12 @@ EOS
         run = ReplicationRun.new session, sweeper
         run.run
       end.terminated?
-      raise "replication run timed out" if terminated
-    rescue Exception => e
-      clear_session
-      raise e
+
+      if terminated
+        message = 'RUNNER - Replication run timed out'
+        RR.logger.error(message)
+        raise message
+      end
     end
 
     # Executes an endless loop of replication runs
@@ -140,13 +146,25 @@ EOS
 
       until termination_requested do
         begin
+          RR.logger.debug 'RUNNER - Starting replication cycle'
           execute_once
+          if !@last_run_successfull && !@last_run_successfull.nil?
+            RR.logger.info 'RUNNER - Connection successfully established again'
+          end
+          RR.logger.debug 'RUNNER - Finished replication cycle successfully'
+          @last_run_successfull = true
         rescue Exception => e
-          now = Time.now.iso8601
-          $stderr.puts "#{now} Exception caught: #{e}"
-          if @last_exception_message != e.to_s # only print backtrace if something changed
-            @last_exception_message = e.to_s
-            $stderr.puts e.backtrace.map {|line| line.gsub(/^/, "#{' ' * now.length} ")}
+          # Check if it's a connection problem
+          if (e.is_a?(PG::Error) && e.to_s =~ %r/could not connect/) || e.to_s =~ %r/no connection to '(.*)' databases/
+            if @last_run_successfull
+              RR.logger.error 'RUNNER - Lost connection to one database, terminating session.'
+              @last_run_successfull = false
+            end
+            
+            clear_session
+            RR.logger.debug 'RUNNER - Databases disconnected, a new one will be built when needed...'
+          else
+            RR.logger.error("Exception caught: #{e}")
           end
           self.termination_requested = true
         end

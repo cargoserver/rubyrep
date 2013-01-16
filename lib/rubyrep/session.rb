@@ -123,6 +123,8 @@ module RR
     # * +database+: target database (either +:left+ or :+right+)
     def database_unreachable?(database)
       unreachable = true
+      RR.logger.debug "SESSION - Checking if database '#{database}' is unreachable"
+
       Thread.new do
         begin
           if send(database) && send(database).select_one("select 1+1 as x")['x'].to_i == 2
@@ -130,6 +132,8 @@ module RR
           end
         end rescue nil
       end.join configuration.options[:database_connection_timeout]
+
+      RR.logger.debug "SESSION - Database '#{database}' is #{unreachable ? 'unreachable' : 'reachable'}"
       unreachable
     end
 
@@ -143,19 +147,23 @@ module RR
     # Disconnnects the specified database
     # * +database+: the target database (either :+left+ or :+right+)
     def disconnect_database(database)
+      RR.logger.debug "SESSION - Trying to disconnect from database '#{database}'"
+
       proxy, connection = @proxies[database], @connections[database]
       @proxies[database] = nil
       @connections[database] = nil
       if proxy
         proxy.destroy_session(connection)
       end
+
+      RR.logger.debug "SESSION - Database '#{database}' successfully disconnected"
     end
 
     # Refreshes both database connections
     # * +options+: A options hash with the following settings
     #   * :+forced+: if +true+, always establish a new database connection
     def refresh(options = {})
-      [:left, :right].each {|database| refresh_database_connection database, options}
+      [:left, :right].each { |database| refresh_database_connection(database, options) }
     end
 
     # Refreshes the specified database connection.
@@ -172,17 +180,27 @@ module RR
           end.join configuration.options[:database_connection_timeout]
         end
 
-        connect_exception = nil
         # step 2: try to reconnect the database
-        Thread.new do
-          begin
-            connect_database database
-          rescue Exception => e
-            # save exception so it can be rethrown outside of the thread
-            connect_exception = e
+        begin
+          connect_exception = nil
+          RR.logger.debug "SESSION - Trying to reconnect to database '#{database}'"
+
+          Thread.new do
+            begin
+              connect_database database
+            rescue Exception => e
+              # save exception so it can be rethrown outside of the thread
+              connect_exception = e
+            end
+          end.join configuration.options[:database_connection_timeout]
+
+          if connect_exception
+            RR.logger.debug "SESSION - Failed to established connection to database '#{database}'"
+            raise connect_exception
+          else
+            RR.logger.debug "SESSION - Successfully established connection to database '#{database}'"
           end
-        end.join configuration.options[:database_connection_timeout]
-        raise connect_exception if connect_exception
+        end
 
         # step 3: verify if database connections actually work (to detect silent connection failures)
         if database_unreachable?(database)
