@@ -73,7 +73,7 @@ module RR
       if ENV['RR_LOGLEVEL']
         # Try to get the correct constant from the logger class
         env_level = ENV['RR_LOGLEVEL'].upcase
-        level = Logger.const_get(env_level) if Logger.constants.include?(env_level)
+        level = Logger.const_get(env_level) if Logger.constants.include?(env_level.to_sym)
       end
 
       # Create new logger and return it
