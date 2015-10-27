@@ -3,6 +3,7 @@ $LOAD_PATH.unshift File.dirname(__FILE__)
 require 'rubygems'
 require 'yaml'
 require 'logger'
+require 'syslogger'
 
 gem 'activerecord', '>= 3.0.5'
 require 'active_record'
@@ -62,26 +63,28 @@ require 'rubyrep/generate_runner'
 require 'rubyrep/noisy_connection'
 
 module RR
-  # Returns the logger used by RubyRep. It logs to STDOUT by default if
-  # nothing else is specified via the RR_LOGFILE env variable. The log level
+  # Returns the logger used by RubyRep. It logs to syslog. The log level
   # defaults to INFO, but it can also be set via the RR_LOGLEVEL env variable.
   def self.logger
     @logger ||= begin
-      file  = (ENV['RR_LOGFILE'] && File.expand_path(ENV['RR_LOGFILE'])) || STDOUT
+
       level = Logger::INFO
-      
-      if ENV['RR_LOGLEVEL']
+      environment_level = ENV['LOG_LEVEL'] || ENV['RR_LOGLEVEL']
+      if environment_level
         # Try to get the correct constant from the logger class
-        env_level = ENV['RR_LOGLEVEL'].upcase
+        env_level = environment_level.upcase
         level = Logger.const_get(env_level) if Logger.constants.include?(env_level.to_sym)
       end
 
-      # Create new logger and return it
-      Logger.new(file).tap do |l|
-        l.level    = level
-        l.progname = 'RubyRep'
+      Syslogger.new('rubyrep', Syslog::LOG_PID, Syslog::LOG_LOCAL1).tap do |l|
+        l.level = level
       end
     end
+  end
+
+  def self.heartbeat(file)
+    require 'fileutils'
+    FileUtils.touch(file) unless file.nil?
   end
 end
 
@@ -95,11 +98,4 @@ require 'rubyrep/replication_extenders/replication_extenders'
 
 Dir["#{File.dirname(__FILE__)}/rubyrep/replication_extenders/*.rb"].each do |extender|
   require extender
-end
-
-module RR
-  def self.heartbeat(file)
-    require 'fileutils'
-    FileUtils.touch(file) unless file.nil?
-  end
 end
