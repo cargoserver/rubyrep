@@ -11,28 +11,28 @@ describe ScanReportPrinters::ScanDetailReporter do
   it "should register itself with ScanRunner" do
     RR::ScanReportPrinters.printers.any? do |printer|
       printer[:printer_class] == ScanReportPrinters::ScanDetailReporter
-    end.should be_true
+    end.should be_truthy
   end
-  
+
   it "initialize should store the provided session" do
     ScanReportPrinters::ScanDetailReporter.new(:dummy_session, nil).session.should == :dummy_session
   end
-  
+
   it "scan should print the summary and the dump of the differences if mode = 'full'" do
     org_stdout = $stdout
     $stdout = StringIO.new
     begin
       reporter = ScanReportPrinters::ScanDetailReporter.new(nil, 'full')
-      
+
       # set some existing scan result to ensure it gets reset before the next run
       reporter.scan_result = {:conflict => 0, :left => 0, :right => 1}
-      
-      reporter.scan('left_table', 'right_table') do 
+
+      reporter.scan('left_table', 'right_table') do
         reporter.report_difference :conflict, :dummy_row
         reporter.report_difference :left, :dummy_row
         reporter.report_difference :right, :dummy_row
       end
-      
+
       # verify summary
       $stdout.string.should =~ /left_table \/ right_table [\.\s]*3\n/
 
@@ -47,7 +47,7 @@ describe ScanReportPrinters::ScanDetailReporter do
         {:left=>:dummy_row},
         {:right=>:dummy_row}
       ]
-    ensure 
+    ensure
       $stdout = org_stdout
     end
   end

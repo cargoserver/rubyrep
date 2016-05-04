@@ -10,31 +10,31 @@ describe ScanReportPrinters::ScanSummaryReporter do
   it "should register itself with ScanRunner" do
     RR::ScanReportPrinters.printers.any? do |printer|
       printer[:printer_class] == ScanReportPrinters::ScanSummaryReporter
-    end.should be_true
+    end.should be_truthy
   end
-  
+
   it "initialize should detect if the detailed number of differnces should be counted" do
-    ScanReportPrinters::ScanSummaryReporter.new(nil, nil).only_totals.should be_true
-    ScanReportPrinters::ScanSummaryReporter.new(nil, "bla").only_totals.should be_true
-    ScanReportPrinters::ScanSummaryReporter.new(nil, "detailed").only_totals.should be_false
+    ScanReportPrinters::ScanSummaryReporter.new(nil, nil).only_totals.should be_truthy
+    ScanReportPrinters::ScanSummaryReporter.new(nil, "bla").only_totals.should be_truthy
+    ScanReportPrinters::ScanSummaryReporter.new(nil, "detailed").only_totals.should be_falsey
   end
-  
+
   it "scan should count differences correctly in totals mode" do
     org_stdout = $stdout
     $stdout = StringIO.new
     begin
       reporter = ScanReportPrinters::ScanSummaryReporter.new(nil, nil)
-      
+
       # set some existing scan result to ensure it gets reset before the next run
       reporter.scan_result = {:conflict => 0, :left => 0, :right => 1}
-      
-      reporter.scan('left_table', 'right_table') do 
+
+      reporter.scan('left_table', 'right_table') do
         reporter.report_difference :conflict, :dummy_row
         reporter.report_difference :left, :dummy_row
         reporter.report_difference :right, :dummy_row
       end
       $stdout.string.should =~ /left_table \/ right_table [\.\s]*3\n/
-    ensure 
+    ensure
       $stdout = org_stdout
     end
   end
@@ -44,7 +44,7 @@ describe ScanReportPrinters::ScanSummaryReporter do
     $stdout = StringIO.new
     begin
       reporter = ScanReportPrinters::ScanSummaryReporter.new(nil, "detailed")
-      
+
       reporter.scan('left_table', 'left_table') do
         reporter.report_difference :conflict, :dummy_row
         reporter.report_difference :left, :dummy_row
@@ -54,7 +54,7 @@ describe ScanReportPrinters::ScanSummaryReporter do
         reporter.report_difference :right, :dummy_row
       end
       $stdout.string.should =~ /left_table\s+1\s+2\s+3\n/
-    ensure 
+    ensure
       $stdout = org_stdout
     end
   end

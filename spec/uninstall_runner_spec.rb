@@ -80,10 +80,10 @@ describe UninstallRunner do
 
       runner.execute
 
-      initializer.trigger_exists?(:left, 'scanner_records').should be_false
-      initializer.change_log_exists?(:left).should be_false
-      session.right.tables.include?('rx_running_flags').should be_false
-      initializer.event_log_exists?.should be_false
+      initializer.trigger_exists?(:left, 'scanner_records').should be_falsey
+      initializer.change_log_exists?(:left).should be_falsey
+      session.right.tables.include?('rx_running_flags').should be_falsey
+      initializer.event_log_exists?.should be_falsey
 
       $stdout.string =~ /uninstall completed/i
     ensure

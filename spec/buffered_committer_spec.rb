@@ -59,7 +59,7 @@ describe Committers::BufferedCommitter do
     stub_begin_transaction session
     stub_execute session
     committer = Committers::BufferedCommitter.new(session)
-    committer.maintain_activity_status?.should be_true
+    committer.maintain_activity_status?.should be_truthy
   end
 
   it "maintain_activity_status should return false if activity marker does not exist" do
@@ -69,7 +69,7 @@ describe Committers::BufferedCommitter do
     stub_begin_transaction session
     stub_execute session
     committer = Committers::BufferedCommitter.new(session)
-    committer.maintain_activity_status?.should be_false
+    committer.maintain_activity_status?.should be_falsey
   end
 
   it "commit_frequency should return the configured commit frequency" do
@@ -188,9 +188,9 @@ describe Committers::BufferedCommitter do
     committer.should_receive(:commit_db_transactions).twice
     committer.should_receive(:begin_db_transactions).twice
     committer.commit
-    committer.new_transaction?.should be_false
+    committer.new_transaction?.should be_falsey
     3.times {committer.commit}
-    committer.new_transaction?.should be_true
+    committer.new_transaction?.should be_truthy
   end
 
   it "insert_record should commit" do

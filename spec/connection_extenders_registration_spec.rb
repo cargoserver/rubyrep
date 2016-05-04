@@ -48,13 +48,13 @@ describe ConnectionExtenders, "Registration" do
   end
 
   it "extenders should return list of registered connection extenders" do
-    ConnectionExtenders.extenders.include?(:postgresql).should be_true
+    ConnectionExtenders.extenders.include?(:postgresql).should be_truthy
   end
 
   it "register should register a new connection extender" do
     ConnectionExtenders.register(:bla => :blub)
 
-    ConnectionExtenders.extenders.include?(:bla).should be_true
+    ConnectionExtenders.extenders.include?(:bla).should be_truthy
   end
 
   it "register should replace already existing connection extenders" do
@@ -90,7 +90,7 @@ describe ConnectionExtenders, "Registration" do
 
       config.left[:adapter] = 'dummy'
 
-      lambda {ConnectionExtenders.db_connect  config.left}.should raise_error(RuntimeError, /dummy/)
+      lambda {ConnectionExtenders.db_connect  config.left}.should raise_error(LoadError, /dummy/)
     end
   end
 

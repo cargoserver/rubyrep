@@ -85,7 +85,7 @@ describe Committers::DefaultCommitter do
   end
 
   it "new_transaction? should return false" do
-    @committer.new_transaction?.should be_false
+    @committer.new_transaction?.should be_falsey
   end
 
   it_should_behave_like "Committer"

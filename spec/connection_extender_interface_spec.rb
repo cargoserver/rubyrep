@@ -22,7 +22,7 @@ shared_examples_for "ConnectionExtender" do
       session = Session.new
       session.left.execute('delete from extender_no_record')
       result = session.left.select_cursor table: 'extender_no_record'
-      result.next?.should be_false
+      result.next?.should be_falsey
     ensure
 
     end
@@ -67,7 +67,7 @@ shared_examples_for "ConnectionExtender" do
         name: 'Alice'
       })
       result = session.left.select_cursor table: 'extender_one_record'
-      result.next?.should be_true
+      result.next?.should be_truthy
       result.next_row.should == {'id' => 1, 'name' => 'Alice'}
     ensure
       session.left.execute('delete from extender_one_record')

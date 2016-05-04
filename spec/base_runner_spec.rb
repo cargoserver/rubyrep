@@ -196,7 +196,7 @@ describe BaseRunner do
       runner.execute
 
       # verify that rubyrep infrastructure tables were excluded
-      runner.session.configuration.excluded_table_specs.include?(/^rr_.*/).should be_true
+      runner.session.configuration.excluded_table_specs.include?(/^rr_.*/).should be_truthy
 
       $stdout.string.should =~ /scanner_records.* 1\n/
       $stdout.string.should =~ /extender_one_record.* 1\n/

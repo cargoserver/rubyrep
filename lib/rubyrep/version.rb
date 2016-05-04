@@ -1,7 +1,7 @@
 module RR #:nodoc:
   module VERSION #:nodoc:
-    MAJOR = 1
-    MINOR = 2
+    MAJOR = 2
+    MINOR = 1
     TINY  = 0
 
     STRING = [MAJOR, MINOR, TINY].join('.')

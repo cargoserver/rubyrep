@@ -28,7 +28,7 @@ describe ReplicationHelper do
     helper = ReplicationHelper.new(rep_run)
     c = helper.instance_eval {@committer}
     c.should_receive(:new_transaction?).and_return(true)
-    helper.new_transaction?.should be_true
+    helper.new_transaction?.should be_truthy
   end
 
   it "replication_run should return the current ReplicationRun instance" do
@@ -108,9 +108,9 @@ describe ReplicationHelper do
   it "options_for_table should merge the configured options into the default two way replicator options" do
     rep_run = ReplicationRun.new(Session.new, TaskSweeper.new(1))
     helper = ReplicationHelper.new(rep_run)
-    helper.options_for_table('scanner_records').include?(:left_change_handling).should be_true
-    helper.options_for_table('scanner_records').include?(:right_change_handling).should be_true
-    helper.options_for_table('scanner_records').include?(:replication_conflict_handling).should be_true
+    helper.options_for_table('scanner_records').include?(:left_change_handling).should be_truthy
+    helper.options_for_table('scanner_records').include?(:right_change_handling).should be_truthy
+    helper.options_for_table('scanner_records').include?(:replication_conflict_handling).should be_truthy
   end
 
   it "log_replication_outcome should log the replication outcome correctly" do

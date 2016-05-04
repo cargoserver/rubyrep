@@ -14,7 +14,7 @@ describe ProxyBlockCursor do
 
   it "next? should return true if there is an already loaded unprocessed row" do
     @cursor.last_row = :dummy_row
-    @cursor.next?.should be_true
+    @cursor.next?.should be_truthy
   end
 
   it "next? should return true if the database cursor has more rows" do
@@ -22,7 +22,7 @@ describe ProxyBlockCursor do
     table_cursor.should_receive(:next?).and_return(true)
     @cursor.cursor = table_cursor
 
-    @cursor.next?.should be_true
+    @cursor.next?.should be_truthy
   end
 
   it "next? should return false if there are no loaded or unloaded unprocessed rows" do
@@ -30,7 +30,7 @@ describe ProxyBlockCursor do
     table_cursor.should_receive(:next?).and_return(false)
     @cursor.cursor = table_cursor
 
-    @cursor.next?.should be_false
+    @cursor.next?.should be_falsey
   end
 
   it "next_row should return last loaded unprocessed row or nil if there is none" do

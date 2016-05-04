@@ -178,7 +178,7 @@ describe ReplicationRunner do
         100, 0.01
       )
       t.should be_alive # verify that the replication thread didn't die
-      found.should be_true
+      found.should be_truthy
 
       session.left.execute "insert into scanner_left_records_only(name) values('bla')"
 
@@ -187,7 +187,7 @@ describe ReplicationRunner do
         session, :right,
         "select * from scanner_left_records_only where name = 'bla'",
         100, 0.01
-      ).should be_true
+      ).should be_truthy
 
       runner.instance_variable_set(:@termination_requested, true)
       t.join

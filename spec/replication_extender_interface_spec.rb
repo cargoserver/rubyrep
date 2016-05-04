@@ -186,10 +186,10 @@ shared_examples_for "ReplicationExtender" do
       session.left.create_replication_trigger params
 
       session.left.replication_trigger_exists?('rr_trigger_test', 'trigger_test').
-        should be_true
+        should be_truthy
       session.left.drop_replication_trigger('rr_trigger_test', 'trigger_test')
       session.left.replication_trigger_exists?('rr_trigger_test', 'trigger_test').
-        should be_false
+        should be_falsey
     ensure
     end
   end

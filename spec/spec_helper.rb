@@ -19,11 +19,11 @@ require 'connection_extender_interface_spec'
 
 unless self.class.const_defined?('STRANGE_TABLE')
   if ENV['RR_TEST_DB'] == 'postgres' || ENV['RR_TEST_DB'] == nil
-    STRANGE_TABLE = 'table_with.stränge Name山'
+    STRANGE_TABLE = 'table_with_strange_name'
   else
-    STRANGE_TABLE = 'table_with_stränge Name山'
+    STRANGE_TABLE = 'table_with_strange_name'
   end
-  STRANGE_COLUMN = 'stränge. Column山'
+  STRANGE_COLUMN = 'strange_column'
 end
 
 class Module

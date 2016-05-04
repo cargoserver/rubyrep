@@ -1,7 +1,7 @@
 $LOAD_PATH << '.'
 
 require 'config/requirements'
-require 'config/hoe'
+# require 'config/hoe'
 
 require 'lib/rubyrep'
 require 'tasks/task_helper'

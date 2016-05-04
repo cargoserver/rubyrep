@@ -65,12 +65,12 @@
 #
 #       # No event filter at all
 #       run = ReplicationRun.new session, TaskSweeper.new(1)
-#       run.event_filtered?(diff).should be_false
+#       run.event_filtered?(diff).should be_falsey
 #
 #       # Event filter that does not handle replication events
 #       session.configuration.options[:event_filter] = Object.new
 #       run = ReplicationRun.new session, TaskSweeper.new(1)
-#       run.event_filtered?(diff).should be_false
+#       run.event_filtered?(diff).should be_falsey
 #
 #       # event_filtered? should signal filtering (i. e. return true) if filter returns false.
 #       filter = Object.new
@@ -79,7 +79,7 @@
 #       end
 #       session.configuration.options[:event_filter] = filter
 #       run = ReplicationRun.new session, TaskSweeper.new(1)
-#       run.event_filtered?(diff).should be_true
+#       run.event_filtered?(diff).should be_truthy
 #
 #       # event_filtered? should return false if filter returns true.
 #       filter = {}
@@ -89,7 +89,7 @@
 #       end
 #       session.configuration.options[:event_filter] = filter
 #       run = ReplicationRun.new session, TaskSweeper.new(1)
-#       run.event_filtered?(diff).should be_false
+#       run.event_filtered?(diff).should be_falsey
 #       filter[:args].should == ['extender_no_record', {'id' => 1}, run.helper, diff]
 #     ensure
 #       session.left.execute "delete from extender_no_record"

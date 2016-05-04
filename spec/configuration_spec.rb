@@ -11,7 +11,7 @@ describe Configuration do
     config.left.should == {}
     config.right.should == {}
   end
-  
+
   it "initialize should set #options to the default options" do
     config = Configuration.new
     config.options.should == Configuration::DEFAULT_OPTIONS
@@ -82,34 +82,34 @@ describe Configuration do
     config = Configuration.new
     config.include_tables('a')
     config.include_tables(/b/)
-    config.included_table_specs.include?('a').should be_true
-    config.included_table_specs.include?(/b/).should be_true
+    config.included_table_specs.include?('a').should be_truthy
+    config.included_table_specs.include?(/b/).should be_truthy
   end
 
   it "include_table should alias to include_tables" do
     config = Configuration.new
     config.include_table('a')
-    config.included_table_specs.include?('a').should be_true
+    config.included_table_specs.include?('a').should be_truthy
   end
 
   it "exclude_tables should exclude the specified table specs" do
     config = Configuration.new
     config.exclude_tables('a')
     config.exclude_tables(/b/)
-    config.excluded_table_specs.include?('a').should be_true
-    config.excluded_table_specs.include?(/b/).should be_true
+    config.excluded_table_specs.include?('a').should be_truthy
+    config.excluded_table_specs.include?(/b/).should be_truthy
   end
 
   it "exclude_table should alias to exclude_tables" do
     config = Configuration.new
     config.exclude_table('a')
-    config.excluded_table_specs.include?('a').should be_true
+    config.excluded_table_specs.include?('a').should be_truthy
   end
 
   it "exclude_rubyrep_tables should exclude the rubyrep infrastructure tables" do
     config = Configuration.new
     config.exclude_rubyrep_tables
-    config.excluded_table_specs.include?(/^rr_.*/).should be_true
+    config.excluded_table_specs.include?(/^rr_.*/).should be_truthy
   end
 
   it "excluded_table_specs should return the list of excluded table specifications" do
