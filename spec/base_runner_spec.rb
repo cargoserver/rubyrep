@@ -136,7 +136,7 @@ describe BaseRunner do
 
   it "report_printer should return the ScanSummaryReporter if no other printer was chosen" do
     runner = BaseRunner.new
-    runner.stub!(:session)
+    runner.stub(:session)
     runner.report_printer.should be_an_instance_of(ScanReportPrinters::ScanSummaryReporter)
   end
 

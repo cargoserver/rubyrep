@@ -67,7 +67,7 @@ describe ReplicationRunner do
 
   it "pause_replication should not pause if next replication is already overdue" do
     runner = ReplicationRunner.new
-    runner.stub!(:session).and_return(Session.new(standard_config))
+    runner.stub(:session).and_return(Session.new(standard_config))
     waiter_thread = mock('waiter_thread')
     waiter_thread.should_not_receive(:join)
     runner.instance_variable_set(:@waiter_thread, waiter_thread)
@@ -79,22 +79,22 @@ describe ReplicationRunner do
 
   it "pause_replication should pause for correct time frame" do
     runner = ReplicationRunner.new
-    runner.stub!(:session).and_return(Session.new(deep_copy(standard_config)))
-    runner.session.configuration.stub!(:options).and_return(:replication_interval => 2)
+    runner.stub(:session).and_return(Session.new(deep_copy(standard_config)))
+    runner.session.configuration.stub(:options).and_return(:replication_interval => 2)
     waiter_thread = mock('waiter_thread')
     runner.instance_variable_set(:@waiter_thread, waiter_thread)
 
     now = Time.now
-    Time.stub!(:now).and_return(now)
+    Time.stub(:now).and_return(now)
     runner.instance_variable_set(:@last_run, now - 1.seconds)
-    waiter_thread.should_receive(:join).and_return {|time| time.to_f.should be_close(1.0, 0.01); 0}
+    waiter_thread.should_receive(:join).and_return {|time| time.to_f.should be_within(0.01).of(1.0); 0}
 
     runner.pause_replication
   end
 
   it "prepare_replication should call ReplicationInitializer#prepare_replication" do
     runner = ReplicationRunner.new
-    runner.stub!(:session).and_return(:dummy_session)
+    runner.stub(:session).and_return(:dummy_session)
     initializer  = mock('replication_initializer')
     initializer.should_receive(:prepare_replication)
     ReplicationInitializer.should_receive(:new).with(:dummy_session).and_return(initializer)
@@ -134,11 +134,11 @@ describe ReplicationRunner do
   it "execute_once should raise exception if replication run times out" do
     session = Session.new
     runner = ReplicationRunner.new
-    runner.stub!(:session).and_return(session)
+    runner.stub(:session).and_return(session)
 
     terminated = mock("terminated")
-    terminated.stub!(:terminated?).and_return(true)
-    TaskSweeper.stub!(:timeout).and_return(terminated)
+    terminated.stub(:terminated?).and_return(true)
+    TaskSweeper.stub(:timeout).and_return(terminated)
 
     lambda {runner.execute_once}.should raise_error(/timed out/)
   end
@@ -167,7 +167,7 @@ describe ReplicationRunner do
       $stdout = StringIO.new
       runner = ReplicationRunner.new
       runner.process_options ["-c", "./config/test_config.rb"]
-      runner.stub!(:session).and_return(session)
+      runner.stub(:session).and_return(session)
 
       t = Thread.new {runner.execute}
 
