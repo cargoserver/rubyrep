@@ -6,6 +6,8 @@ require 'yaml'
 gem 'activerecord', '>= 3.0.5'
 require 'active_record'
 
+require 'pry'
+
 require 'rubyrep/version'
 require 'rubyrep/configuration'
 require 'rubyrep/initializer'

@@ -8,3 +8,5 @@ gem 'rake'
 gem 'pg'
 
 gem 'rspec', '~> 2.0'
+
+gem 'pry'
