@@ -125,7 +125,7 @@ module RR
         #     (SELECT oid FROM pg_namespace WHERE nspname in (#{schemas}))
         # end_sql
         # raise "table '#{table}' does not exist" if row.nil?
-        #
+
         # row = self.select_one(<<-end_sql)
         #   SELECT cons.conkey
         #   FROM pg_class           rel
@@ -135,11 +135,11 @@ module RR
         # end_sql
         # return [] if row.nil?
         # column_parray = row['conkey'][0].to_s
-        #
+
         # # Change a Postgres Array of attribute numbers
         # # (returned in String form, e. g.: "{1,2}") into an array of Integers
         # column_ids = column_parray.sub(/^\{(.*)\}$/,'\1').split(',').map {|a| a.to_i}
-        #
+
         # columns = {}
         # rows = self.select_all(<<-end_sql)
         #   SELECT attnum, attname
@@ -155,7 +155,10 @@ module RR
         #   sorted_columns = column_ids.map {|column_id| columns[column_id]}
         # end
         # sorted_columns
-        ['id']
+
+        # ['id']
+
+        self.primary_key(table).present? ? [self.primary_key(table)] : []
       end
 
       # Returns for each given table, which other tables it references via
