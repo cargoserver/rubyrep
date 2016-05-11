@@ -83,8 +83,8 @@ EOS
     # Removes current +Session+.
     def clear_session
       if @session
-        @session.left.rollback_db_transaction  if @session.left  rescue nil
-        @session.right.rollback_db_transaction if @session.right rescue nil
+        @session.left.transaction_manager.rollback_transaction  if @session.left  rescue nil
+        @session.right.transaction_manager.rollback_transaction if @session.right rescue nil
       end
       @session = nil
     end
