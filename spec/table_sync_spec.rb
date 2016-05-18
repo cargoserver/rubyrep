@@ -52,7 +52,7 @@ describe TableSync do
     session = Session.new standard_config
     sync = TableSync.new(session, 'scanner_records')
 
-    sync.event_filtered?(:left, 'id' => 1).should be_falseyy
+    sync.event_filtered?(:left, 'id' => 1).should eq(false)
   end
 
   it "event_filtered? should return false if event filter does not filter sync events" do
@@ -61,7 +61,7 @@ describe TableSync do
     session = Session.new config
     sync = TableSync.new(session, 'scanner_records')
 
-    sync.event_filtered?(:left, 'id' => 1).should be_falseyy
+    sync.event_filtered?(:left, 'id' => 1).should eq(false)
   end
 
   it "event_filtered? should signal filtering (i. e. return true) if the event filter result is false" do
@@ -88,7 +88,7 @@ describe TableSync do
     session = Session.new config
     sync = TableSync.new(session, 'scanner_records')
     sync.helper = SyncHelper.new(sync)
-    sync.event_filtered?(:left, 'id' => 1, 'name' => 'bla').should be_falseyy
+    sync.event_filtered?(:left, 'id' => 1, 'name' => 'bla').should eq(false)
 
     # verify correct parameter assignment
     filter[:args].should == ['scanner_records', {'id' => 1}, sync.helper, :left, {'id' => 1, 'name' => 'bla'}]
