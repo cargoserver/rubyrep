@@ -1,6 +1,6 @@
 = rubyrep
 
-Note: This branch is Rails 3.2.8 and Ruby 1.9.3 only!
+Note: This branch based on ActiveRecord/ActiveSupport 4.2 and Ruby 2.1.5
 
 == MISSION:
 
