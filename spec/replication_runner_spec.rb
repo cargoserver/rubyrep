@@ -79,8 +79,9 @@ describe ReplicationRunner do
 
   it "pause_replication should pause for correct time frame" do
     runner = ReplicationRunner.new
-    runner.stub(:session).and_return(Session.new(deep_copy(standard_config)))
-    runner.session.configuration.stub(:options).and_return(:replication_interval => 2)
+    Initializer.configuration = standard_config
+    Initializer.configuration.stub(:options).and_return(:replication_interval => 2)
+
     waiter_thread = mock('waiter_thread')
     runner.instance_variable_set(:@waiter_thread, waiter_thread)
 

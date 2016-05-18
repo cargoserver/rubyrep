@@ -136,6 +136,9 @@ EOS
         RR.logger.error(message)
         raise message
       end
+    rescue Exception => e
+      clear_session
+      raise e
     end
 
     # Executes an endless loop of replication runs
@@ -160,7 +163,7 @@ EOS
               RR.logger.error 'RUNNER - Lost connection to one database, terminating session.'
               @last_run_successfull = false
             end
-            
+
             clear_session
             RR.logger.debug 'RUNNER - Databases disconnected, a new one will be built when needed...'
           else
