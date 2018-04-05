@@ -138,6 +138,7 @@ module RR
       #   * :+value+: current value
       def sequence_values(rep_prefix, table_name)
         result = {}
+        skipped_prefix = "#{rep_prefix || 'rr'}_"
         sequence_names = select_all(<<-end_sql).map { |row| row['relname'] }
           select s.relname
           from pg_class as t
@@ -148,6 +149,7 @@ module RR
             (SELECT oid FROM pg_namespace WHERE nspname in (#{schemas}))
         end_sql
         sequence_names.each do |sequence_name|
+          next if sequence_name.start_with? skipped_prefix # skip rubyrep internal sequences erroneously detected as dependent
           row = select_one("select last_value, increment_by from \"#{sequence_name}\"")
           result[sequence_name] = {
             :increment => row['increment_by'].to_i,
@@ -233,4 +235,3 @@ module RR
     end
   end
 end
-
