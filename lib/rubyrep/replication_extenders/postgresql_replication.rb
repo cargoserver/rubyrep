@@ -127,6 +127,13 @@ module RR
         end_sql
       end
 
+      def pg_major_version
+        @pg_major_version ||= begin
+          version_string = select_value("select version();")
+          version_string.gsub(/^\s*postgresql\s*([0-9.]+).*$/i, '\1').split('.').first.to_i
+        end
+      end
+
       # Returns all unadjusted sequences of the given table.
       # Parameters:
       # * +rep_prefix+: not used (necessary) for the Postgres
@@ -150,7 +157,11 @@ module RR
         end_sql
         sequence_names.each do |sequence_name|
           next if sequence_name.start_with? skipped_prefix # skip rubyrep internal sequences erroneously detected as dependent
-          row = select_one("select last_value, increment_by from \"#{sequence_name}\"")
+          if pg_major_version >= 10
+            row = select_one("select last_value, increment_by from pg_sequences where sequencename = '#{sequence_name}'")
+          else
+            row = row = select_one("select last_value, increment_by from \"#{sequence_name}\"")
+          end
           result[sequence_name] = {
             :increment => row['increment_by'].to_i,
             :value => row['last_value'].to_i
@@ -177,7 +188,11 @@ module RR
           rep_prefix, table_name, increment, offset,
           left_sequence_values, right_sequence_values, adjustment_buffer)
         left_sequence_values.each do |sequence_name, left_current_value|
-          row = select_one("select last_value, increment_by from \"#{sequence_name}\"")
+          if pg_major_version >= 10
+            row = select_one("select last_value, increment_by from pg_sequences where sequencename = '#{sequence_name}'")
+          else
+            row = select_one("select last_value, increment_by from \"#{sequence_name}\"")
+          end
           current_increment = row['increment_by'].to_i
           current_value = row['last_value'].to_i
           unless current_increment == increment and current_value % increment == offset
@@ -228,7 +243,7 @@ module RR
         execute(<<-end_sql)
           alter table "#{table_name}" add constraint #{table_name}_#{key_name}_pkey primary key (#{key_name})
         end_sql
-        
+
       ensure
         execute "set client_min_messages = #{old_message_level}"
       end
