@@ -15,4 +15,5 @@ gem 'rspec'
 gem 'crack'
 gem 'awesome_print', require: 'ap'
 gem 'rake'
+gem 'syslogger'
 gem 'simplecov', :require => false, :group => :test
