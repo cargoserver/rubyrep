@@ -6,8 +6,10 @@ require 'yaml'
 require 'logger'
 require 'syslogger'
 
-gem 'activerecord', '>= 3.0.5'
+gem 'activerecord', '>= 4.2', '< 5'
 require 'active_record'
+require 'activerecord-jdbc-adapter' if RUBY_PLATFORM == 'java'
+require 'ap'
 
 require 'version'
 require 'configuration'
@@ -79,8 +81,7 @@ module RR
 end
 
 Dir["#{File.dirname(__FILE__)}/rubyrep/connection_extenders/*.rb"].each do |extender|
-  # jdbc_extender.rb is only loaded if we are running on jruby
-  require extender unless extender =~ /jdbc/ and not RUBY_PLATFORM =~ /java/
+  require extender
 end
 
 require 'replication_initializer'
